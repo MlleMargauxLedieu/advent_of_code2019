@@ -39,23 +39,42 @@ def to_wire_path(line):
             print('New postion is: ', positions[-1])
         coordinates = positions.copy()
         path.extend(coordinates)
-    return set(path)
+    return path
+
 
 
 wire1_path = to_wire_path(line_1)
 wire2_path = to_wire_path(line_2)
-
+from collections import OrderedDict
+wire2_path = list(OrderedDict.fromkeys(wire2_path))
+wire1_path = list(OrderedDict.fromkeys(wire1_path))
 print('Wire 1 instructions: ', line_1)
 print('Wire 1 coordinates: ', wire1_path)
 print('Wire 2 instructions: ', line_2)
 print('Wire 2 coordinates: ', wire2_path)
-intersections = wire2_path.intersection(wire1_path)
+intersections = set(wire2_path).intersection(set(wire1_path))
 intersections.discard((0,0))
 
-print('Intersection of wire paths:' , intersections)
+def steps_to_intersection(wire_path):
+    steps = {}
+    for item in intersections:
+        if item in wire_path:
+            steps_to_intersection = wire_path.index(item)
+            print('Index of '+ str(item)+  ' is '  + str(steps_to_intersection))
+            steps[item] = steps_to_intersection
+    return steps
+
+steps_1 = steps_to_intersection(wire1_path)
+steps_2 = steps_to_intersection(wire2_path)
+combined_steps = {}
+for key in steps_1.keys():
+    combined_steps[key] = steps_1[key] + steps_2[key]
+
+print(combined_steps)
 distances = []
 for (x,y) in intersections:
     distance = abs(x-0)+ abs(y-0)
     distances.append(distance)
-    print(distance)
-print(min(distances))
+print('Minimal distance is: ', min(distances))
+
+print('Minimal number of steps is: ', min(combined_steps.items(), key=lambda x: x[1]) )
